@@ -1,2 +1,2 @@
-# Elimination
+# Hide-n-seek
 Pygame project
