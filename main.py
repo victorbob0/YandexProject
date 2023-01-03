@@ -3,8 +3,6 @@ import sys
 
 import pygame
 
-# Изображение не получится загрузить
-# без предварительной инициализации pygame
 
 
 def load_image(name, colorkey=None):
