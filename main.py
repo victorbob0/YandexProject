@@ -99,3 +99,5 @@ class Player(pygame.sprite.Sprite):
         self.image = player_image
         self.rect = self.image.get_rect().move(
             tile_width * pos_x + 15, tile_height * pos_y + 5)
+
+player, level_x, level_y = generate_level(load_level('.txt'))
