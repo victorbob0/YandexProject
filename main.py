@@ -4,7 +4,6 @@ import sys
 import pygame
 
 
-
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
@@ -14,12 +13,13 @@ def load_image(name, colorkey=None):
     image = pygame.image.load(fullname)
     return image
 
-FPS = 50
-
 
 def terminate():
     pygame.quit()
     sys.exit()
+
+
+FPS = 50
 
 
 def start_screen():
