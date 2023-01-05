@@ -52,6 +52,8 @@ def start_screen():
         clock.tick(FPS)
 
 
+all_sprites = pygame.sprite.Group()
+
 if __name__ == '__main__':
     pygame.init()
     size = WIDTH, HEIGHT = 800, 600
