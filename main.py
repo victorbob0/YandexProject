@@ -64,6 +64,8 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+
 def load_level(filename):
     #filename = "data/" + filename
     # читаем уровень, убирая символы перевода строки
@@ -75,6 +77,7 @@ def load_level(filename):
 
     # дополняем каждую строку пустыми клетками ('.')
     return list(map(lambda x: x.ljust(max_width, '.'), level_map))
+
 
 tile_images = {
     'wall': load_image('box.png'),
@@ -99,6 +102,8 @@ class Player(pygame.sprite.Sprite):
         self.image = player_image
         self.rect = self.image.get_rect().move(
             tile_width * pos_x + 15, tile_height * pos_y + 5)
+
+
 def generate_level(level):
     new_player, x, y = None, None, None
     for y in range(len(level)):
@@ -112,5 +117,6 @@ def generate_level(level):
                 new_player = Player(x, y)
     # вернем игрока, а также размер поля в клетках
     return new_player, x, y
+
 
 player, level_x, level_y = generate_level(load_level('.txt'))
