@@ -54,8 +54,6 @@ def start_screen():
 
 
 def load_level(filename):
-    #filename = "data/" + filename
-    # читаем уровень, убирая символы перевода строки
     with open(filename, 'r') as mapFile:
         level_map = [line.strip() for line in mapFile]
 
@@ -67,8 +65,8 @@ def load_level(filename):
 
 
 tile_images = {
-    'wall': load_image('вставить имя файла'),
-    'empty': load_image('вставить имя файла')
+    'wall': load_image('grass.png'),
+    'empty': load_image('wall.png')
 }
 player_image = load_image('chelik.jpg')
 
@@ -124,9 +122,9 @@ class Camera:
         obj.rect.y += self.dy
 
     # позиционировать камеру на объекте target
-    def update(self, target):
-        self.dx = -(target.rect.x + target.rect.w // 2 - WIDTH // 2)
-        self.dy = -(target.rect.y + target.rect.h // 2 - HEIGHT // 2)
+    def update(self, target, width, height):
+        self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
+        self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
 
 
 def generate_level(level):
@@ -144,7 +142,7 @@ def generate_level(level):
     return new_player, x, y
 
 
-player, level_x, level_y = generate_level(load_level('.txt'))
+player, level_x, level_y = generate_level(load_level('data/game228.txt'))
 camera = Camera()
 
 
@@ -152,17 +150,17 @@ camera = Camera()
 
 
 if __name__ == '__main__':
-    camera.update(player)
-    for sprite in all_sprites:
-        camera.apply(sprite)
-
     pygame.init()
     size = WIDTH, HEIGHT = 800, 600
+    camera.update(player, WIDTH, HEIGHT)
     screen = pygame.display.set_mode(size)
     running = True
     x_pos = 0
     clock = pygame.time.Clock()
-    start_screen()
+    pygame.display.flip()
+    #start_screen()
+    for sprite in all_sprites:
+        camera.apply(sprite)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
