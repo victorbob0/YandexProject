@@ -52,21 +52,6 @@ def start_screen():
         clock.tick(FPS)
 
 
-all_sprites = pygame.sprite.Group()
-
-if __name__ == '__main__':
-    pygame.init()
-    size = WIDTH, HEIGHT = 800, 600
-    screen = pygame.display.set_mode(size)
-    running = True
-    x_pos = 0
-    clock = pygame.time.Clock()
-    start_screen()
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
 
 def load_level(filename):
     #filename = "data/" + filename
@@ -82,12 +67,33 @@ def load_level(filename):
 
 
 tile_images = {
-    'wall': load_image('box.png'),
-    'empty': load_image('grass.png')
+    'wall': load_image('вставить имя файла'),
+    'empty': load_image('вставить имя файла')
 }
-player_image = load_image('mario.png')
+player_image = load_image('chelik.jpg')
 
 tile_width = tile_height = 50
+player = None
+
+# группы спрайтов
+all_sprites = pygame.sprite.Group()
+tiles_group = pygame.sprite.Group()
+player_group = pygame.sprite.Group()
+
+
+def generate_level(level):
+    new_player, x, y = None, None, None
+    for y in range(len(level)):
+        for x in range(len(level[y])):
+            if level[y][x] == '.':
+                Tile('empty', x, y)
+            elif level[y][x] == '#':
+                Tile('wall', x, y)
+            elif level[y][x] == '@':
+                Tile('empty', x, y)
+                new_player = Player(x, y)
+    # вернем игрока, а также размер поля в клетках
+    return new_player, x, y
 
 
 class Tile(pygame.sprite.Sprite):
@@ -106,6 +112,23 @@ class Player(pygame.sprite.Sprite):
             tile_width * pos_x + 15, tile_height * pos_y + 5)
 
 
+class Camera:
+    # зададим начальный сдвиг камеры
+    def __init__(self):
+        self.dx = 0
+        self.dy = 0
+
+    # сдвинуть объект obj на смещение камеры
+    def apply(self, obj):
+        obj.rect.x += self.dx
+        obj.rect.y += self.dy
+
+    # позиционировать камеру на объекте target
+    def update(self, target):
+        self.dx = -(target.rect.x + target.rect.w // 2 - WIDTH // 2)
+        self.dy = -(target.rect.y + target.rect.h // 2 - HEIGHT // 2)
+
+
 def generate_level(level):
     new_player, x, y = None, None, None
     for y in range(len(level)):
@@ -122,3 +145,27 @@ def generate_level(level):
 
 
 player, level_x, level_y = generate_level(load_level('.txt'))
+camera = Camera()
+
+
+
+
+
+if __name__ == '__main__':
+    camera.update(player)
+    for sprite in all_sprites:
+        camera.apply(sprite)
+
+    pygame.init()
+    size = WIDTH, HEIGHT = 800, 600
+    screen = pygame.display.set_mode(size)
+    running = True
+    x_pos = 0
+    clock = pygame.time.Clock()
+    start_screen()
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+
