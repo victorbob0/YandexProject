@@ -141,6 +141,7 @@ player_group = pygame.sprite.Group()
 
 
 class Player(pygame.sprite.Sprite):
+
     def __init__(self, pos_x, pos_y):
         super().__init__(player_group)
         self.image = player_image
@@ -244,8 +245,12 @@ if __name__ == '__main__':
     level_map = load_level('data/game228.txt')
     camera.update(player, WIDTH, HEIGHT)
     start_screen()
-    #player, level_x, level_y = generate_level(load_level('data/game228.txt'))
     hero, max_x, max_y = generate_level(level_map)
+    pygame.display.flip() #uuuuu
+    # start_screen()
+    for sprite in all_sprites:
+        camera.apply(sprite)
+ #bbbbb
     while ranning:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
