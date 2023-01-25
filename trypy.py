@@ -1,27 +1,95 @@
+import pygame
 import os
 import sys
 
-import pygame
 
-size = WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode(size)
-
-
-def load_image(name, colorkey=None):
+def load_image(name, color_key=None):
     fullname = os.path.join('data', name)
-    # если файл не существует, то выходим
-    image = pygame.image.load(fullname)
-    if colorkey is not None:
-        image = image.convert()
-        if colorkey == -1:
-            colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey)
-    else:
-        image = image.convert_alpha()
-    if not os.path.isfile(fullname):
-        print(f"Файл с изображением '{fullname}' не найден")
-        sys.exit()
+    try:
+        image = pygame.image.load(fullname)
+    except pygame.error as message:
+        print('Не удаётся загрузить:', name)
+        raise SystemExit(message)
+    image = image.convert_alpha()
+    if color_key is not None:
+        if color_key == -1:
+            color_key = image.get_at((0, 0))
+        image.set_colorkey(color_key)
     return image
+
+
+pygame.init()
+size = width, height = 500, 500
+screen = pygame.display.set_mode(size)
+sprite_group = pygame.sprite.Group()
+hero_group = pygame.sprite.Group()
+
+tile_image = {
+    'empty': pygame.transform.scale(load_image('grass.png'), (100, 100)),
+    'wall': pygame.transform.scale(load_image('wall.png'), (100, 100)),
+    'bush': pygame.transform.scale(load_image('bush.png'), (100, 100)),
+    'closet': pygame.transform.scale(load_image('closet.png'), (50, 70)),
+    'toy': pygame.transform.scale(load_image('toy.png'), (100, 100)),
+    'chair': pygame.transform.scale(load_image('chair.png'), (100, 100)),
+    'spruce': pygame.transform.scale(load_image('spruce.png'), (100, 100)),
+    'ppl': pygame.transform.scale(load_image('chelik.png'), (40, 40)), #нужно заменить спрайт
+    'sofa': pygame.transform.scale(load_image('sofa.png'), (100, 100)),
+    'cooler': pygame.transform.scale(load_image('cooler.png'), (100, 100)),
+    'bed': pygame.transform.scale(load_image('bed.png'), (100, 100)),
+    'bench': pygame.transform.scale(load_image('bench.png'), (100, 100)),
+    'kitstuff': pygame.transform.scale(load_image('closet.png'), (100, 100)), #нужно заменить спрайт
+    'helper': pygame.transform.scale(load_image('chelik.png'), (50, 50)), #нужно заменить спрайт --поправила
+    'wayout': pygame.transform.scale(load_image('grass.png'), (100, 100)), #нужно заменить спрайт
+    'fridge': pygame.transform.scale(load_image('fridge.png'), (100, 100)),
+    'cooker': pygame.transform.scale(load_image('cooker.png'), (100, 100))
+}
+player_image = load_image('chelik.png')
+
+tile_width = tile_height = 50
+
+
+class ScreenFrame(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.rect = (0, 0, 1000, 1000)
+
+
+class SpriteGroup(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+
+    def get_event(self, event):
+        for inet in self:
+            inet.get_event(event)
+
+
+class Sprite(pygame.sprite.Sprite):
+    def __init__(self, group):
+        super().__init__(group)
+        self.rect = None
+
+    def get_event(self, event):
+        pass
+
+
+class Tile(Sprite):
+    def __init__(self, tile_type, pos_x, pos_y):
+        super().__init__(sprite_group)
+        self.image = tile_image[tile_type]
+        self.rect = self.image.get_rect().move(tile_width * pos_x, tile_height * pos_y)
+
+
+class Player(Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(hero_group)
+        self.image = player_image
+        self.rect = self.image.get_rect().move(tile_width * pos_x + 15, tile_height * pos_y + 5)
+        self.pos = (pos_x, pos_y)
+
+    def move(self, x, y):
+        self.pos = (x, y)
+        self.rect = self.image.get_rect().move(tile_width * self.pos[0] + 15,
+                                               tile_height * self.pos[1] + 5)
 
 
 def terminate():
@@ -29,15 +97,11 @@ def terminate():
     sys.exit()
 
 
-FPS = 50
-
-
 def start_screen():
-    intro_text = ["ЗАСТАВКА", "",
-                  "Правила игры",
-                  "Если в правилах несколько строк,",
-                  "приходится выводить их построчно"]
-    fon = pygame.transform.scale(load_image('стол.png'), size)
+    intro_text = ["Перемещение героя", '',
+                  "Герой двигается",
+                  "Карта на месте"]
+    fon = pygame.transform.scale(load_image('fon.jpg'), size)
     screen.blit((fon), (0, 0))
     font = pygame.font.Font(None, 30)
     text_coord = 50
@@ -59,69 +123,12 @@ def start_screen():
         pygame.display.flip()
 
 
-
 def load_level(filename):
+    filename = 'data/' + filename
     with open(filename, 'r') as mapFile:
-        level_map = [line.strip() for line in mapFile]
+         level_map = [line.strip() for line in mapFile]
     max_width = max(map(len, level_map))
-
-    # дополняем каждую строку пустыми клетками ('.')
-    return list(map(lambda x: x.ljust(max_width, '+'), level_map))
-
-
-tile_images = {
-    'empty': pygame.transform.scale(load_image('grass.png'), (100, 100)),
-    'wall': pygame.transform.scale(load_image('wall.png'), (100, 100)),
-    'bush': pygame.transform.scale(load_image('bush.png'), (100, 100)),
-    'closet': pygame.transform.scale(load_image('closet.png'), (100, 100)),
-    'toy': pygame.transform.scale(load_image('toy.png'), (100, 100)),
-    'chair': pygame.transform.scale(load_image('chair.png'), (100, 100)),
-    'spruce': pygame.transform.scale(load_image('spruce.png'), (100, 100)),
-    'ppl': pygame.transform.scale(load_image('chelik.png'), (40, 40)), #нужно заменить спрайт
-    'sofa': pygame.transform.scale(load_image('sofa.png'), (100, 100)),
-    'cooler': pygame.transform.scale(load_image('cooler.png'), (100, 100)),
-    'bed': pygame.transform.scale(load_image('bed.png'), (100, 100)),
-    'bench': pygame.transform.scale(load_image('bench.png'), (100, 100)),
-    'kitstuff': pygame.transform.scale(load_image('closet.png'), (100, 100)), #нужно заменить спрайт
-    'helper': pygame.transform.scale(load_image('chelik.png'), (50, 50)), #нужно заменить спрайт --поправила
-    'wayout': pygame.transform.scale(load_image('grass.png'), (100, 100)), #нужно заменить спрайт
-    'fridge': pygame.transform.scale(load_image('fridge.png'), (100, 100)),
-    'cooker': pygame.transform.scale(load_image('cooker.png'), (100, 100))
-}
-player_image = load_image('chelik.png')
-
-tile_width = tile_height = 50
-player = None
-
-
-class Tile(pygame.sprite.Sprite):
-    def __init__(self, tile_type, pos_x, pos_y):
-        super().__init__(tiles_group, all_sprites)
-        self.image = tile_images[tile_type]
-        self.rect = self.image.get_rect().move(
-            tile_width * pos_x, tile_height * pos_y)
-
-
-# группы спрайтов
-pygame.init()
-all_sprites = pygame.sprite.Group()
-tiles_group = pygame.sprite.Group()
-#screen = pygame.display.set_mode(size)
-player_group = pygame.sprite.Group()
-
-
-
-class Player(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
-        super().__init__(player_group)
-        self.image = player_image
-        self.rect = self.image.get_rect().move(tile_width * pos_x + 15, tile_height * pos_y + 5)
-        self.pos = (pos_x, pos_y)
-
-    def move(self, x, y):
-        self.pos = (x, y)
-        self.rect = self.image.get_rect().move(tile_width * self.pos[0] + 15,
-                                               tile_height * self.pos[1] + 5)
+    return list(map(lambda x: list(x.ljust(max_width, '+')), level_map))
 
 
 def generate_level(level):
@@ -171,24 +178,6 @@ def generate_level(level):
     return new_player, x, y
 
 
-
-class Camera:
-    # зададим начальный сдвиг камеры
-    def __init__(self):
-        self.dx = 0
-        self.dy = 0
-
-    # сдвинуть объект obj на смещение камеры
-    def apply(self, obj):
-        obj.rect.x += self.dx
-        obj.rect.y += self.dy
-
-    # позиционировать камеру на объекте target
-    def update(self, target, width, height):
-        self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
-        self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
-
-
 def move(hero, movement):
     x, y = hero.pos
     if movement == 'up':
@@ -205,22 +194,19 @@ def move(hero, movement):
             hero.move(x + 1, y)
 
 
-camera = Camera()
-
 if __name__ == '__main__':
+    SIZE = 1000, 1000
+    screen = pygame.display.set_mode(SIZE)
     pygame.display.set_caption('Марио')
-    #hero = None
-    size = WIDTH, HEIGHT = 800, 600
-    running = True
-    #player, level_x, level_y = generate_level(load_level('data/game228.txt'))
-    level_map = load_level('data/game228.txt')
+    player = None
+    ranning = True
     start_screen()
+    level_map = load_level('game228.txt')
     hero, max_x, max_y = generate_level(level_map)
-    camera.update(hero, WIDTH, HEIGHT)
-    while running:
+    while ranning:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                ranning = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     move(hero, 'up')
@@ -231,28 +217,7 @@ if __name__ == '__main__':
                 if event.key == pygame.K_LEFT:
                     move(hero, 'left')
         screen.fill(pygame.Color('black'))
-        all_sprites.draw(screen)
-        player_group.draw(screen)
+        sprite_group.draw(screen)
+        hero_group.draw(screen)
         pygame.display.flip()
     pygame.quit()
-    ...
-    '''pygame.init()
-    size = WIDTH, HEIGHT = 800, 600
-    screen = pygame.display.set_mode(size)
-    player, level_x, level_y = generate_level(load_level('data/game228.txt'))
-    camera.update(player, WIDTH, HEIGHT)
-    running = True
-    x_pos = 0
-    clock = pygame.time.Clock()
-    pygame.display.flip()
-    #start_screen()
-    for sprite in all_sprites:
-        camera.apply(sprite)
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-        screen.fill(pygame.Color('black'))
-        all_sprites.draw(screen)
-        pygame.display.update()'''
-
