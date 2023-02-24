@@ -108,6 +108,125 @@ def main():
         elif result == 'reset':
             pass
 
+def running(levels, levelnumber):
+    global currentImage
+    levelObj = levels[levelnumber]
+    mapObj = decorateMap(levelObj['mapObj'], levelObj['startState']['player'])
+    gameStateObj = copy.deepcopy(levelObj['startState'])
+    mapNeedsRedraw = True
+    levelSurf = text.render('Level %s of %s' % (levelnumber + 1, len(levels)), 1, textcolor)
+    levelRect = levelSurf.get_rect()
+    levelRect.bottomleft = (20, height - 35)
+    mapWidth = len(mapObj) * object_width
+    mapHeight = (len(mapObj[0]) - 1) * object_floor_height + object_height
+    MAX_CAM_X_PAN = abs(half_height - int(mapHeight / 2)) + object_width
+    MAX_CAM_Y_PAN = abs(half_width - int(mapWidth / 2)) + object_height
+
+    levelIsComplete = False
+
+    camera_setX = 0
+    camera_setY = 0
+
+    cameraUp, cameraDown, cameraLeft, cameraRight = False, False, False, False
+
+    while True:
+        playermove = None
+        keyPressed = False
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                terminate()
+            elif event.type == KEYDOWN:
+                keyPressed = True
+                if event.key == K_LEFT:
+                    playermove = LEFT
+                elif event.key == K_RIGHT:
+                    playermove = RIGHT
+                elif event.key == K_UP:
+                    playermove = UP
+                elif event.key == K_DOWN:
+                    playermove = DOWN
+
+                elif event.key == K_a:
+                    cameraLeft = True
+                elif event.key == K_d:
+                    cameraRight = True
+                elif event.key == K_w:
+                    cameraUp = True
+                elif event.key == K_s:
+                    cameraDown = True
+
+                elif event.key == K_n:
+                    return 'next'
+                elif event.key == K_b:
+                    return 'back'
+
+                elif event.key == K_ESCAPE:
+                    terminate()
+                elif event.key == K_BACKSPACE:
+                    return 'reset'
+                elif event.key == K_p:
+                    currentImage += 1
+                    if currentImage >= len(players):
+                        currentImage = 0
+                    mapNeedsRedraw = True
+
+            elif event.type == KEYUP:
+                if event.key == K_a:
+                    cameraLeft = False
+                elif event.key == K_d:
+                    cameraRight = False
+                elif event.key == K_w:
+                    cameraUp = False
+                elif event.key == K_s:
+                    cameraDown = False
+
+        if playermove != None and not levelIsComplete:
+            moved = makeMove(mapObj, gameStateObj, playermove)
+            if moved:
+                gameStateObj['stepCounter'] += 1
+                mapNeedsRedraw = True
+            if isLevelFinished(levelObj, gameStateObj):
+                levelIsComplete = True
+                keyPressed = False
+
+        mainSurface.fill(background)
+
+        if mapNeedsRedraw:
+            mapSurf = drawMap(mapObj, gameStateObj, levelObj['goals'])
+            mapNeedsRedraw = False
+
+        if cameraUp and camera_setY < MAX_CAM_X_PAN:
+            camera_setY += CAM_MOVE_SPEED
+        elif cameraDown and camera_setY > -MAX_CAM_X_PAN:
+            camera_setY -= CAM_MOVE_SPEED
+        if cameraLeft and camera_setX < MAX_CAM_Y_PAN:
+            camera_setX += CAM_MOVE_SPEED
+        elif cameraRight and camera_setX > -MAX_CAM_Y_PAN:
+            camera_setX -= CAM_MOVE_SPEED
+
+        mapSurfRect = mapSurf.get_rect()
+        mapSurfRect.center = (half_width + camera_setX, half_height + camera_setY)
+
+        mainSurface.blit(mapSurf, mapSurfRect)
+
+        mainSurface.blit(levelSurf, levelRect)
+        stepSurf = text.render('Steps: %s' % (gameStateObj['stepCounter']), 1, textcolor)
+        stepRect = stepSurf.get_rect()
+        stepRect.bottomleft = (20, height - 10)
+        mainSurface.blit(stepSurf, stepRect)
+
+        if levelIsComplete:
+            solvedRect = images['solved'].get_rect()
+            solvedRect.center = (half_width, half_height)
+            mainSurface.blit(images['solved'], solvedRect)
+
+            if keyPressed:
+                return 'solved'
+
+        pygame.display.update()
+        FPS_clock.tick()
+
 
 def isWall(mapObj, x, y):
     if x < 0 or x >= len(mapObj) or y < 0 or y >= len(mapObj[x]):
