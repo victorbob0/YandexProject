@@ -13,15 +13,15 @@ CAM_MOVE_SPEED = 5
 
 outside_decoration = 20
 
-BRIGHTBLUE = (0, 170, 255)
-WHITE = (255, 255, 255)
-BGCOLOR = BRIGHTBLUE
-TEXTCOLOR = WHITE
+background = (0, 225, 130)
+textcolor = (255, 255, 255)
 
 UP = 'up'
 DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
+
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
