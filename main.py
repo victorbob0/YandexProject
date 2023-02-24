@@ -386,12 +386,12 @@ def readFile(filename):
             levelnum + 1, linenum, filename)
             assert len(goals) > 0, 'Level %s (around line %s) in %s must have at least one goal.' % (
             levelnum + 1, linenum, filename)
-            assert len(coins) >= len(goals), 'Level %s (around line %s) in %s is impossible to solve. It has %s goals but only %s stars.' % (
+            assert len(coins) >= len(goals), 'Level %s (around line %s) in %s is impossible to solve. It has %s goals but only %s coins.' % (
             levelnum + 1, linenum, filename, len(goals), len(coins))
 
             gameStateObj = {'player': (start_x, start_y),
                             'stepCounter': 0,
-                            'stars': coins}
+                            'coins': coins}
             levelObj = {'width': maxWidth,
                         'height': len(mapObj),
                         'mapObj': mapObj,
