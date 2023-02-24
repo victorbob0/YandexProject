@@ -407,6 +407,21 @@ def readFile(filename):
     return levels
 
 
+# позже проверить
+def floodFill(mapObj, x, y, oldCharacter, newCharacter):
+    if mapObj[x][y] == oldCharacter:
+        mapObj[x][y] = newCharacter
+
+    if x < len(mapObj) - 1 and mapObj[x + 1][y] == oldCharacter:
+        floodFill(mapObj, x + 1, y, oldCharacter, newCharacter)
+    elif x > 0 and mapObj[x - 1][y] == oldCharacter:
+        floodFill(mapObj, x - 1, y, oldCharacter, newCharacter)
+    elif y < len(mapObj[x]) - 1 and mapObj[x][y + 1] == oldCharacter:
+        floodFill(mapObj, x, y + 1, oldCharacter, newCharacter)
+    elif y > 0 and mapObj[x][y - 1] == oldCharacter:
+        floodFill(mapObj, x, y - 1, oldCharacter, newCharacter)
+
+
 def terminate():
     pygame.quit()
     sys.exit()
