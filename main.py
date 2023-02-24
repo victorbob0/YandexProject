@@ -24,7 +24,6 @@ RIGHT = 'right'
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
-    # если файл не существует, то выходим
     image = pygame.image.load(fullname)
     if colorkey is not None:
         image = image.convert()
@@ -107,6 +106,7 @@ def main():
                 current_level_index = len(levels) - 1
         elif result == 'reset':
             pass
+
 
 def running(levels, levelnumber):
     global currentImage
@@ -267,7 +267,7 @@ def isBlocked(mapObj, state_game, x, y):
     elif x < 0 or x >= len(mapObj) or y < 0 or y >= len(mapObj[x]):
         return True
 
-    elif (x, y) in state_game['coins']:
+    elif (x, y) in state_game['stars']:
         return True
 
     return False
@@ -275,7 +275,7 @@ def isBlocked(mapObj, state_game, x, y):
 
 def makeMove(mapObj, state_game, playermove):
     player_x, player_y = state_game['player']
-    coins = state_game['coins']
+    coins = state_game['stars']
     if playermove == UP:
         xOffset = 0
         yOffset = -1
@@ -420,6 +420,40 @@ def floodFill(mapObj, x, y, oldCharacter, newCharacter):
         floodFill(mapObj, x, y + 1, oldCharacter, newCharacter)
     elif y > 0 and mapObj[x][y - 1] == oldCharacter:
         floodFill(mapObj, x, y - 1, oldCharacter, newCharacter)
+
+
+def drawMap(mapObj, game_state, goals):
+    map_width = len(mapObj) * object_width
+    map_height = (len(mapObj[0]) - 1) * object_floor_height + object_height
+    map_surf = pygame.Surface((map_width, map_height))
+    map_surf.fill(background)
+    for x in range(len(mapObj)):
+        for y in range(len(mapObj[x])):
+            space_rect = pygame.Rect((x * object_width, y * object_floor_height, object_width, object_height))
+            if mapObj[x][y] in barriers:
+                base_tile = barriers[mapObj[x][y]]
+            elif mapObj[x][y] in outside:
+                base_tile = barriers[' ']
+            map_surf.blit(base_tile, space_rect)
+
+            if mapObj[x][y] in outside:
+                map_surf.blit(outside[mapObj[x][y]], space_rect)
+            elif (x, y) in game_state['stars']:
+                if (x, y) in goals:
+                    map_surf.blit(images['goal with coin'], space_rect)
+                map_surf.blit(images['coin'], space_rect)
+            elif (x, y) in goals:
+                map_surf.blit(images['goal'], space_rect)
+            if (x, y) == game_state['player']:
+                map_surf.blit(players[currentImage], space_rect)
+    return map_surf
+
+
+def isLevelFinished(level, game_state):
+    for goal in level['goals']:
+        if goal not in game_state['stars']:
+            return False
+    return True
 
 
 def terminate():
