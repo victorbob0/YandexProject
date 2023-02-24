@@ -13,18 +13,13 @@ CAM_MOVE_SPEED = 5
 
 outside_decoration = 20
 
-BRIGHTBLUE = (0, 170, 255)
-WHITE = (255, 255, 255)
-BGCOLOR = BRIGHTBLUE
-TEXTCOLOR = WHITE
+background = (0, 225, 130)
+textcolor = (255, 255, 255)
 
 UP = 'up'
 DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
-tile_size = tile_width, tile_height = 50, 85
-coin_size = coin_width, coin_height = 50, 50
-
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -41,6 +36,18 @@ def load_image(name, colorkey=None):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
     return image
+
+def main():
+    global FPS_clock, mainSurface, images, TILEMAPPING, OUTSIDEDECOMAPPING, text, PLAYERIMAGES, currentImage
+    pygame.init()
+    FPS_clock = pygame.time.Clock()
+    sound = pygame.mixer.Sound('music1.wav')
+    sound.play()
+
+    mainSurface = pygame.display.set_mode((width, height))
+
+    pygame.display.set_caption('Gold Rush')
+    text = pygame.font.Font('arial.ttf', 20)
 
 
 def terminate():
