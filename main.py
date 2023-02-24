@@ -60,7 +60,7 @@ def main():
               'wall': load_image('crystal_blue2.png'),
               'inside floor': load_image('Plain_Block.png'),
               'outside floor': pygame.transform.scale(load_image('Grass_Block.png'), tile_size),
-              'title': load_image('star_title.png'),
+              'title': load_image('titlle_image.png'),
               'solved': load_image('star_solved.png'),
               'ghost': load_image('ghost_.png'),
               'boy': load_image('ghost_.png'),
@@ -425,4 +425,8 @@ def floodFill(mapObj, x, y, oldCharacter, newCharacter):
 def terminate():
     pygame.quit()
     sys.exit()
+
+
+if __name__ == '__main__':
+    main()
 
