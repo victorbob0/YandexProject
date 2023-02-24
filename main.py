@@ -38,6 +38,18 @@ def load_image(name, colorkey=None):
         sys.exit()
     return image
 
+def main():
+    global FPS_clock, mainSurface, images, TILEMAPPING, OUTSIDEDECOMAPPING, text, PLAYERIMAGES, currentImage
+    pygame.init()
+    FPS_clock = pygame.time.Clock()
+    sound = pygame.mixer.Sound('C:/Users/oliet/Downloads/music1.wav')
+    sound.play()
+
+    mainSurface = pygame.display.set_mode((width, height))
+
+    pygame.display.set_caption('Gold Rush')
+    text = pygame.font.Font('arial.ttf', 20)
+
 
 def terminate():
     pygame.quit()
