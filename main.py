@@ -42,8 +42,8 @@ def main():
     global FPS_clock, mainSurface, images, barriers, outside, text, players, currentImage
     pygame.init()
     FPS_clock = pygame.time.Clock()
-    #sound = pygame.mixer.Sound('music1.wav')
-    #sound.play()
+    sound = pygame.mixer.Sound('music1.wav')
+    sound.play()
 
     mainSurface = pygame.display.set_mode((width, height))
 
