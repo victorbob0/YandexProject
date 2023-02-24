@@ -72,28 +72,28 @@ def main():
               'tall tree': pygame.transform.scale(load_image('birch_4.png'), tile_size),
               'ugly tree': pygame.transform.scale(load_image('jungle_tree_5.png'), tile_size)}
 
-        players = [images['ghost'],
-                   images['boy'],
-                   images['girl'],
-                   images['cat'],
-                   images['pinkgirl']]
+    players = [images['ghost'],
+                images['boy'],
+                images['girl'],
+                images['cat'],
+                images['pinkgirl']]
 
-        barriers = {'x': images['corner'],
-                    '#': images['wall'],
-                    'o': images['inside floor'],
-                    ' ': images['outside floor']}
+    barriers = {'x': images['corner'],
+                '#': images['wall'],
+                'o': images['inside floor'],
+                ' ': images['outside floor']}
 
-        outside = {'1': images['rock'],
-                   '2': images['short tree'],
-                   '3': images['tall tree'],
-                   '4': images['ugly tree']}
+    outside = {'1': images['rock'],
+                '2': images['short tree'],
+                '3': images['tall tree'],
+                '4': images['ugly tree']}
 
-        currentImage = 0
+    currentImage = 0
 
-        startScreen()
+    startScreen()
 
-        levels = readLevelsFile('for_play.txt')
-        currentLevelIndex = 0
+    levels = readLevelsFile('for_play.txt')
+    currentLevelIndex = 0
 
 
 def terminate():
