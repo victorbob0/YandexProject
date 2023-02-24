@@ -42,13 +42,13 @@ def main():
     global FPS_clock, mainSurface, images, barriers, outside, text, players, currentImage
     pygame.init()
     FPS_clock = pygame.time.Clock()
-    sound = pygame.mixer.Sound('music1.wav')
-    sound.play()
+    #sound = pygame.mixer.Sound('music1.wav')
+    #sound.play()
 
     mainSurface = pygame.display.set_mode((width, height))
 
     pygame.display.set_caption('Gold Rush')
-    text = pygame.font.Font('arial.ttf', 20)
+    text = pygame.font.Font('data/arial.ttf', 20)
     tile_size = tile_width, tile_height = 50, 85
     coin_size = coin_width, coin_height = 50, 50
 
