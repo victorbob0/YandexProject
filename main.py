@@ -91,7 +91,7 @@ def main():
     currentImage = 0
 
     startScreen()
-    levels = readLevelsFile('for_play.txt')
+    levels = readFile('for_play.txt')
 
     current_level_index = 0
     while True:
@@ -338,6 +338,73 @@ def startScreen():
 
         pygame.display.update()
         FPS_clock.tick()
+
+
+def readFile(filename):
+    assert os.path.exists(filename), 'Cannot find the level file: %s' % (filename)
+    mapFile = open(filename, 'r')
+    content = mapFile.readlines() + ['\r\n']
+    mapFile.close()
+
+    levels = []
+    levelnum = 0
+    mapTextLines = []
+    mapObj = []
+    for linenum in range(len(content)):
+        line = content[linenum].rstrip('\r\n')
+
+        if line != '':
+            mapTextLines.append(line)
+        elif line == '' and len(mapTextLines) > 0:
+            maxWidth = -1
+            for i in range(len(mapTextLines)):
+                if len(mapTextLines[i]) > maxWidth:
+                    maxWidth = len(mapTextLines[i])
+            for i in range(len(mapTextLines)):
+                mapTextLines[i] += ' ' * (maxWidth - len(mapTextLines[i]))
+            for x in range(len(mapTextLines[0])):
+                mapObj.append([])
+            for y in range(len(mapTextLines)):
+                for x in range(maxWidth):
+                    mapObj[x].append(mapTextLines[y][x])
+
+            start_x = None
+            start_y = None
+            goals = []
+            coins = []
+            for x in range(maxWidth):
+                for y in range(len(mapObj[x])):
+                    if mapObj[x][y] in ('@', '+'):
+                        start_x = x
+                        start_y = y
+                    if mapObj[x][y] in ('.', '+', '*'):
+                        goals.append((x, y))
+                    if mapObj[x][y] in ('$', '*'):
+                        coins.append((x, y))
+
+            assert start_x != None and start_y != None, 'Level %s (around line %s) in %s is missing a "@" or "+" to mark the start point.' % (
+            levelnum + 1, linenum, filename)
+            assert len(goals) > 0, 'Level %s (around line %s) in %s must have at least one goal.' % (
+            levelnum + 1, linenum, filename)
+            assert len(coins) >= len(goals), 'Level %s (around line %s) in %s is impossible to solve. It has %s goals but only %s stars.' % (
+            levelnum + 1, linenum, filename, len(goals), len(coins))
+
+            gameStateObj = {'player': (start_x, start_y),
+                            'stepCounter': 0,
+                            'stars': coins}
+            levelObj = {'width': maxWidth,
+                        'height': len(mapObj),
+                        'mapObj': mapObj,
+                        'goals': goals,
+                        'startState': gameStateObj}
+
+            levels.append(levelObj)
+
+            mapTextLines = []
+            mapObj = []
+            gameStateObj = {}
+            levelnum += 1
+    return levels
 
 
 def terminate():
