@@ -136,7 +136,7 @@ def decorateMap(mapObj, xy_start):
                     copy_map[x][y] = 'x'
 
             elif copy_map[x][y] == ' ' and random.randint(0, 99) < outside_decoration:
-                copy_map[x][y] = random.choice(list(OUTSIDEDECOMAPPING.keys()))
+                copy_map[x][y] = random.choice(list(outside.keys()))
 
     return copy_map
 
@@ -148,7 +148,7 @@ def isBlocked(mapObj, state_game, x, y):
     elif x < 0 or x >= len(mapObj) or y < 0 or y >= len(mapObj[x]):
         return True
 
-    elif (x, y) in state_game['stars']:
+    elif (x, y) in state_game['coins']:
         return True
 
     return False
@@ -156,7 +156,7 @@ def isBlocked(mapObj, state_game, x, y):
 
 def makeMove(mapObj, state_game, playerMoveTo):
     player_x, player_y = state_game['player']
-    stars = state_game['stars']
+    coins = state_game['coins']
     if playerMoveTo == UP:
         xOffset = 0
         yOffset = -1
@@ -173,10 +173,10 @@ def makeMove(mapObj, state_game, playerMoveTo):
     if isWall(mapObj, player_x + xOffset, player_y + yOffset):
         return False
     else:
-        if (player_x + xOffset, player_y + yOffset) in stars:
+        if (player_x + xOffset, player_y + yOffset) in coins:
             if not isBlocked(mapObj, state_game, player_x + (xOffset*2), player_y + (yOffset*2)):
-                ind = stars.index((player_x + xOffset, player_y + yOffset))
-                stars[ind] = (stars[ind][0] + xOffset, stars[ind][1] + yOffset)
+                ind = coins.index((player_x + xOffset, player_y + yOffset))
+                coins[ind] = (coins[ind][0] + xOffset, coins[ind][1] + yOffset)
             else:
                 return False
         state_game['player'] = (player_x + xOffset, player_y + yOffset)
