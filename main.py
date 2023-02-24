@@ -91,10 +91,22 @@ def main():
     currentImage = 0
 
     startScreen()
-
     levels = readLevelsFile('for_play.txt')
-    currentLevelIndex = 0
 
+    current_level_index = 0
+    while True:
+        result = running(levels, current_level_index)
+        if result in ('solved', 'next'):
+            current_level_index += 1
+            if current_level_index >= len(levels):
+                current_level_index = 0
+        elif result == 'back':
+            # Go to the previous level.
+            current_level_index -= 1
+            if current_level_index < 0:
+                current_level_index = len(levels) - 1
+        elif result == 'reset':
+            pass
 
 def terminate():
     pygame.quit()
