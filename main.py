@@ -11,7 +11,7 @@ object_floor_height = 40
 
 CAM_MOVE_SPEED = 5
 
-OUTSIDE_DECORATION_PCT = 20
+outside_decoration = 20
 
 BRIGHTBLUE = (0, 170, 255)
 WHITE = (255, 255, 255)
