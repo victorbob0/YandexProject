@@ -248,10 +248,10 @@ def decorateMap(mapObj, xy_start):
         for y in range(len(copy_map[0])):
 
             if copy_map[x][y] == '#':
-                if (isWall(copy_map, x, y-1) and isWall(copy_map, x+1, y)) or \
-                   (isWall(copy_map, x+1, y) and isWall(copy_map, x, y+1)) or \
-                   (isWall(copy_map, x, y+1) and isWall(copy_map, x-1, y)) or \
-                   (isWall(copy_map, x-1, y) and isWall(copy_map, x, y-1)):
+                if (isWall(copy_map, x, y - 1) and isWall(copy_map, x + 1, y)) or \
+                   (isWall(copy_map, x + 1, y) and isWall(copy_map, x, y + 1)) or \
+                   (isWall(copy_map, x, y + 1) and isWall(copy_map, x - 1, y)) or \
+                   (isWall(copy_map, x - 1, y) and isWall(copy_map, x, y - 1)):
                     copy_map[x][y] = 'x'
 
             elif copy_map[x][y] == ' ' and random.randint(0, 99) < outside_decoration:
@@ -382,12 +382,15 @@ def readFile(filename):
                     if mapObj[x][y] in ('$', '*'):
                         coins.append((x, y))
 
-            assert start_x != None and start_y != None, 'Level %s (around line %s) in %s is missing a "@" or "+" to mark the start point.' % (
-            levelnum + 1, linenum, filename)
-            assert len(goals) > 0, 'Level %s (around line %s) in %s must have at least one goal.' % (
-            levelnum + 1, linenum, filename)
-            assert len(coins) >= len(goals), 'Level %s (around line %s) in %s is impossible to solve. It has %s goals but only %s coins.' % (
-            levelnum + 1, linenum, filename, len(goals), len(coins))
+            assert start_x != None and start_y != None, \
+                'Level %s (around line %s) in %s is missing a "@" or "+" to mark the start point.' \
+                % (levelnum + 1, linenum, filename)
+            assert len(goals) > 0, \
+                'Level %s (around line %s) in %s must have at least one goal.' \
+                % (levelnum + 1, linenum, filename)
+            assert len(coins) >= len(goals), \
+                'Level %s (around line %s) in %s is impossible to solve. It has %s goals but only %s coins.' \
+                % (levelnum + 1, linenum, filename, len(goals), len(coins))
 
             gameStateObj = {'player': (start_x, start_y),
                             'stepCounter': 0,
