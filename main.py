@@ -1,7 +1,3 @@
-
-#представьте себе код
-#он обязательно будет
-#прямо здесь
 import pygame, sys, os, random, copy
 from pygame.locals import *
 
