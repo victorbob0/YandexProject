@@ -37,6 +37,7 @@ def load_image(name, colorkey=None):
         sys.exit()
     return image
 
+
 def main():
     global FPS_clock, mainSurface, images, TILEMAPPING, OUTSIDEDECOMAPPING, text, PLAYERIMAGES, currentImage
     pygame.init()
@@ -48,6 +49,60 @@ def main():
 
     pygame.display.set_caption('Gold Rush')
     text = pygame.font.Font('arial.ttf', 20)
+
+    def main():
+        global FPS_clock, mainSurface, images, barriers, outside, text, players, currentImage
+        pygame.init()
+        FPS_clock = pygame.time.Clock()
+        sound = pygame.mixer.Sound('music1.wav')
+        sound.play()
+
+        mainSurface = pygame.display.set_mode((width, height))
+
+        pygame.display.set_caption('Gold Rush')
+        text = pygame.font.Font('arial.ttf', 20)
+
+        images = {'goal': pygame.image.load('.png'),
+                  'goal with coin': pygame.image.load('.png'),
+                  'coin': pygame.image.load('.png'),
+                  'corner': pygame.image.load('.png'),
+                  'wall': pygame.image.load('.png'),
+                  'inside floor': pygame.image.load('.png'),
+                  'outside floor': pygame.image.load('.png'),
+                  'title': pygame.image.load('.png'),
+                  'solved': pygame.image.load('.png'),
+                  'girl': pygame.image.load('.png'),
+                  'boy': pygame.image.load('.png'),
+                  'ghost': pygame.image.load('.png'),
+                  'cat': pygame.image.load(''),
+                  'pinkgirl': pygame.image.load(''),
+                  'rock': pygame.image.load('.png'),
+                  'short tree': pygame.image.load('.png'),
+                  'tall tree': pygame.image.load('.png'),
+                  'ugly tree': pygame.image.load('.png')}
+
+        players = [images['girl'],
+                   images['boy'],
+                   images['ghost'],
+                   images['cat'],
+                   images['pinkgirl']]
+
+        barriers = {'x': images['corner'],
+                    '#': images['wall'],
+                    'o': images['inside floor'],
+                    ' ': images['outside floor']}
+
+        outside = {'1': images['rock'],
+                   '2': images['short tree'],
+                   '3': images['tall tree'],
+                   '4': images['ugly tree']}
+
+        currentImage = 0
+
+        startScreen()
+
+        levels = readLevelsFile('for_play.txt')
+        currentLevelIndex = 0
 
 
 def terminate():
