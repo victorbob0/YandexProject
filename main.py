@@ -273,19 +273,19 @@ def isBlocked(mapObj, state_game, x, y):
     return False
 
 
-def makeMove(mapObj, state_game, playerMoveTo):
+def makeMove(mapObj, state_game, playermove):
     player_x, player_y = state_game['player']
     coins = state_game['coins']
-    if playerMoveTo == UP:
+    if playermove == UP:
         xOffset = 0
         yOffset = -1
-    elif playerMoveTo == RIGHT:
+    elif playermove == RIGHT:
         xOffset = 1
         yOffset = 0
-    elif playerMoveTo == DOWN:
+    elif playermove == DOWN:
         xOffset = 0
         yOffset = 1
-    elif playerMoveTo == LEFT:
+    elif playermove == LEFT:
         xOffset = -1
         yOffset = 0
 
@@ -300,6 +300,44 @@ def makeMove(mapObj, state_game, playerMoveTo):
                 return False
         state_game['player'] = (player_x + xOffset, player_y + yOffset)
         return True
+
+
+def startScreen():
+    titleRect = images['title'].get_rect()
+    topCoord = 50
+    titleRect.top = topCoord
+    titleRect.centerx = half_width
+    topCoord += titleRect.height
+
+    instructionText = ['Передвигайте монеты на необходимые поля.',
+                       'Используйте стрелочки для передвижения,',
+                       ' W A S D для управления камерой, P для изменения персонажа.',
+                       'Backspace для обновления уровня, Esc для выхода из игры.',
+                       'N для перехода на следующий уровень, B для возвращения на предыдущий уровень.']
+
+    mainSurface.fill(background)
+    mainSurface.blit(images['title'], titleRect)
+
+    for i in range(len(instructionText)):
+        instSurf = text.render(instructionText[i], 1, textcolor)
+        instRect = instSurf.get_rect()
+        topCoord += 10
+        instRect.top = topCoord
+        instRect.centerx = half_width
+        topCoord += instRect.height
+        mainSurface.blit(instSurf, instRect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                terminate()
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    terminate()
+                return
+
+        pygame.display.update()
+        FPS_clock.tick()
 
 
 def terminate():
