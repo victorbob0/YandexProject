@@ -108,6 +108,81 @@ def main():
         elif result == 'reset':
             pass
 
+
+def isWall(mapObj, x, y):
+    if x < 0 or x >= len(mapObj) or y < 0 or y >= len(mapObj[x]):
+        return False
+    elif mapObj[x][y] in ('#', 'x'):
+        return True
+    return False
+
+
+def decorateMap(mapObj, xy_start):
+    x_start, y_start = xy_start
+    copy_map = copy.deepcopy(mapObj)
+    for x in range(len(copy_map)):
+        for y in range(len(copy_map[0])):
+            if copy_map[x][y] in ('$', '.', '@', '+', '*'):
+                copy_map[x][y] = ' '
+    floodFill(copy_map, x_start, y_start, ' ', 'o')
+    for x in range(len(copy_map)):
+        for y in range(len(copy_map[0])):
+
+            if copy_map[x][y] == '#':
+                if (isWall(copy_map, x, y-1) and isWall(copy_map, x+1, y)) or \
+                   (isWall(copy_map, x+1, y) and isWall(copy_map, x, y+1)) or \
+                   (isWall(copy_map, x, y+1) and isWall(copy_map, x-1, y)) or \
+                   (isWall(copy_map, x-1, y) and isWall(copy_map, x, y-1)):
+                    copy_map[x][y] = 'x'
+
+            elif copy_map[x][y] == ' ' and random.randint(0, 99) < outside_decoration:
+                copy_map[x][y] = random.choice(list(OUTSIDEDECOMAPPING.keys()))
+
+    return copy_map
+
+
+def isBlocked(mapObj, state_game, x, y):
+    if isWall(mapObj, x, y):
+        return True
+
+    elif x < 0 or x >= len(mapObj) or y < 0 or y >= len(mapObj[x]):
+        return True
+
+    elif (x, y) in state_game['stars']:
+        return True
+
+    return False
+
+
+def makeMove(mapObj, state_game, playerMoveTo):
+    player_x, player_y = state_game['player']
+    stars = state_game['stars']
+    if playerMoveTo == UP:
+        xOffset = 0
+        yOffset = -1
+    elif playerMoveTo == RIGHT:
+        xOffset = 1
+        yOffset = 0
+    elif playerMoveTo == DOWN:
+        xOffset = 0
+        yOffset = 1
+    elif playerMoveTo == LEFT:
+        xOffset = -1
+        yOffset = 0
+
+    if isWall(mapObj, player_x + xOffset, player_y + yOffset):
+        return False
+    else:
+        if (player_x + xOffset, player_y + yOffset) in stars:
+            if not isBlocked(mapObj, state_game, player_x + (xOffset*2), player_y + (yOffset*2)):
+                ind = stars.index((player_x + xOffset, player_y + yOffset))
+                stars[ind] = (stars[ind][0] + xOffset, stars[ind][1] + yOffset)
+            else:
+                return False
+        state_game['player'] = (player_x + xOffset, player_y + yOffset)
+        return True
+
+
 def terminate():
     pygame.quit()
     sys.exit()
