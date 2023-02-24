@@ -267,7 +267,7 @@ def isBlocked(mapObj, state_game, x, y):
     elif x < 0 or x >= len(mapObj) or y < 0 or y >= len(mapObj[x]):
         return True
 
-    elif (x, y) in state_game['stars']:
+    elif (x, y) in state_game['coins']:
         return True
 
     return False
@@ -275,7 +275,7 @@ def isBlocked(mapObj, state_game, x, y):
 
 def makeMove(mapObj, state_game, playermove):
     player_x, player_y = state_game['player']
-    coins = state_game['stars']
+    coins = state_game['coins']
     if playermove == UP:
         xOffset = 0
         yOffset = -1
@@ -438,7 +438,7 @@ def drawMap(mapObj, game_state, goals):
 
             if mapObj[x][y] in outside:
                 map_surf.blit(outside[mapObj[x][y]], space_rect)
-            elif (x, y) in game_state['stars']:
+            elif (x, y) in game_state['coins']:
                 if (x, y) in goals:
                     map_surf.blit(images['goal with coin'], space_rect)
                 map_surf.blit(images['coin'], space_rect)
@@ -451,7 +451,7 @@ def drawMap(mapObj, game_state, goals):
 
 def isLevelFinished(level, game_state):
     for goal in level['goals']:
-        if goal not in game_state['stars']:
+        if goal not in game_state['coins']:
             return False
     return True
 
