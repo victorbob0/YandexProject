@@ -22,6 +22,8 @@ UP = 'up'
 DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
+tile_size = tile_width, tile_height = 50, 85
+coin_size = coin_width, coin_height = 50, 50
 
 
 def load_image(name, colorkey=None):
