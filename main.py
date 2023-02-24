@@ -84,9 +84,9 @@ def main():
                 ' ': images['outside floor']}
 
     outside = {'1': images['rock'],
-                '2': images['short tree'],
-                '3': images['tall tree'],
-                '4': images['ugly tree']}
+               '2': images['short tree'],
+               '3': images['tall tree'],
+               '4': images['ugly tree']}
 
     currentImage = 0
 
