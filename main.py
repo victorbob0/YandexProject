@@ -1,12 +1,27 @@
-import os
-import sys
+import pygame, sys, os, random, copy
+from pygame.locals import *
 
-import pygame
+FPS = 30
+width, height = 800, 600
+half_width = int(width / 2)
+half_height = int(height / 2)
+object_width = 50
+object_height = 85
+object_floor_height = 40
 
-size = WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode(size)
+CAM_MOVE_SPEED = 5
 
+OUTSIDE_DECORATION_PCT = 20
 
+BRIGHTBLUE = (0, 170, 255)
+WHITE = (255, 255, 255)
+BGCOLOR = BRIGHTBLUE
+TEXTCOLOR = WHITE
+
+UP = 'up'
+DOWN = 'down'
+LEFT = 'left'
+RIGHT = 'right'
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
@@ -28,8 +43,6 @@ def terminate():
     pygame.quit()
     sys.exit()
 
-
-FPS = 50
 
 
 '''def start_screen():
