@@ -50,9 +50,7 @@ def main():
     pygame.display.set_caption('Gold Rush')
     text = pygame.font.Font('data/arial.ttf', 20)
     tile_size = tile_width, tile_height = 50, 85
-    coin_size = coin_width, coin_height = 50, 50
-    achieved_goal_size = coin_width + 2, coin_height + 2
-    moving_coin_size = coin_width - 2, coin_height - 2
+    coin_size = coin_width, coin_height = 42, 42
     charcter_size = 50, 70
 
     images = {'goal': pygame.transform.scale(load_image('red.png'), tile_size),
