@@ -2,7 +2,7 @@ import pygame, sys, os, random, copy
 from pygame.locals import *
 
 FPS = 30
-width, height = 800, 600
+size = width, height = 800, 600
 half_width = int(width / 2)
 half_height = int(height / 2)
 object_width = 50
@@ -51,31 +51,32 @@ def main():
     text = pygame.font.Font('data/arial.ttf', 20)
     tile_size = tile_width, tile_height = 50, 85
     coin_size = coin_width, coin_height = 50, 50
+    charcter_size = 50, 70
 
     images = {'goal': pygame.transform.scale(load_image('Bronze_30.png'), coin_size),
               'goal with coin': pygame.transform.scale(load_image('Silver_21.png'), coin_size),
               'coin': pygame.transform.scale(load_image('Silver_21.png'), coin_size),
               'corner': pygame.transform.scale(load_image('Tile_03.png'), tile_size),
-              'wall': load_image('crystal_blue2.png'),
+              'wall': pygame.transform.scale(load_image('Tile_05.png'), tile_size),
               'inside floor': load_image('Plain_Block.png'),
               'outside floor': pygame.transform.scale(load_image('Grass_Block.png'), tile_size),
               'title': load_image('titlle_image.png'),
               'solved': load_image('star_solved.png'),
               'ghost': load_image('ghost_.png'),
-              'boy': load_image('ghost_.png'),
-              'girl': load_image('ghost_.png'),
-              'cat': load_image('ghost_.png'),
-              'pinkgirl': load_image('pinkgirl.png'),
+              'redguy': pygame.transform.scale(load_image('red_chelick.png'), charcter_size),
+              'pinkmon': pygame.transform.scale(load_image('Pink_Monster.png'), coin_size),
+              'whitemon': pygame.transform.scale(load_image('Owlet_Monster.png'), coin_size),
+              'bluemon': pygame.transform.scale(load_image('Dude_Monster.png'), coin_size),
               'rock': load_image('Rock.png'),
               'short tree': pygame.transform.scale(load_image('bush7_3.png'), tile_size),
               'tall tree': pygame.transform.scale(load_image('birch_4.png'), tile_size),
               'ugly tree': pygame.transform.scale(load_image('jungle_tree_5.png'), tile_size)}
 
     players = [images['ghost'],
-                images['boy'],
-                images['girl'],
-                images['cat'],
-                images['pinkgirl']]
+                images['redguy'],
+                images['pinkmon'],
+                images['whitemon'],
+                images['bluemon']]
 
     barriers = {'x': images['corner'],
                 '#': images['wall'],
@@ -112,7 +113,7 @@ def running(levels, levelnumber):
     global currentImage
     levelObj = levels[levelnumber]
     mapObj = decorateMap(levelObj['mapObj'], levelObj['startState']['player'])
-    gameStateObj = copy.deepcopy(levelObj['startState'])
+    game_state = copy.deepcopy(levelObj['startState'])
     mapNeedsRedraw = True
     levelSurf = text.render('Level %s of %s' % (levelnumber + 1, len(levels)), 1, textcolor)
     levelRect = levelSurf.get_rect()
@@ -182,18 +183,18 @@ def running(levels, levelnumber):
                     cameraDown = False
 
         if playermove != None and not levelIsComplete:
-            moved = makeMove(mapObj, gameStateObj, playermove)
+            moved = makeMove(mapObj, game_state, playermove)
             if moved:
-                gameStateObj['stepCounter'] += 1
+                game_state['stepCounter'] += 1
                 mapNeedsRedraw = True
-            if isLevelFinished(levelObj, gameStateObj):
+            if isLevelFinished(levelObj, game_state):
                 levelIsComplete = True
                 keyPressed = False
 
         mainSurface.fill(background)
 
         if mapNeedsRedraw:
-            mapSurf = drawMap(mapObj, gameStateObj, levelObj['goals'])
+            mapSurf = drawMap(mapObj, game_state, levelObj['goals'])
             mapNeedsRedraw = False
 
         if cameraUp and camera_setY < MAX_CAM_X_PAN:
@@ -211,7 +212,7 @@ def running(levels, levelnumber):
         mainSurface.blit(mapSurf, mapSurfRect)
 
         mainSurface.blit(levelSurf, levelRect)
-        stepSurf = text.render('Steps: %s' % (gameStateObj['stepCounter']), 1, textcolor)
+        stepSurf = text.render('Steps: %s' % (game_state['stepCounter']), 1, textcolor)
         stepRect = stepSurf.get_rect()
         stepRect.bottomleft = (20, height - 10)
         mainSurface.blit(stepSurf, stepRect)
@@ -260,22 +261,22 @@ def decorateMap(mapObj, xy_start):
     return copy_map
 
 
-def isBlocked(mapObj, state_game, x, y):
+def isBlocked(mapObj, game_state, x, y):
     if isWall(mapObj, x, y):
         return True
 
     elif x < 0 or x >= len(mapObj) or y < 0 or y >= len(mapObj[x]):
         return True
 
-    elif (x, y) in state_game['coins']:
+    elif (x, y) in game_state['coins']:
         return True
 
     return False
 
 
-def makeMove(mapObj, state_game, playermove):
-    player_x, player_y = state_game['player']
-    coins = state_game['coins']
+def makeMove(mapObj, game_state, playermove):
+    player_x, player_y = game_state['player']
+    coins = game_state['coins']
     if playermove == UP:
         xOffset = 0
         yOffset = -1
@@ -293,12 +294,12 @@ def makeMove(mapObj, state_game, playermove):
         return False
     else:
         if (player_x + xOffset, player_y + yOffset) in coins:
-            if not isBlocked(mapObj, state_game, player_x + (xOffset*2), player_y + (yOffset*2)):
+            if not isBlocked(mapObj, game_state, player_x + (xOffset*2), player_y + (yOffset*2)):
                 ind = coins.index((player_x + xOffset, player_y + yOffset))
                 coins[ind] = (coins[ind][0] + xOffset, coins[ind][1] + yOffset)
             else:
                 return False
-        state_game['player'] = (player_x + xOffset, player_y + yOffset)
+        game_state['player'] = (player_x + xOffset, player_y + yOffset)
         return True
 
 
@@ -389,20 +390,20 @@ def readFile(filename):
             assert len(coins) >= len(goals), 'Level %s (around line %s) in %s is impossible to solve. It has %s goals but only %s coins.' % (
             levelnum + 1, linenum, filename, len(goals), len(coins))
 
-            gameStateObj = {'player': (start_x, start_y),
+            game_state = {'player': (start_x, start_y),
                             'stepCounter': 0,
                             'coins': coins}
             levelObj = {'width': maxWidth,
                         'height': len(mapObj),
                         'mapObj': mapObj,
                         'goals': goals,
-                        'startState': gameStateObj}
+                        'startState': game_state}
 
             levels.append(levelObj)
 
             mapTextLines = []
             mapObj = []
-            gameStateObj = {}
+            game_state = {}
             levelnum += 1
     return levels
 
@@ -419,6 +420,7 @@ def floodFill(mapObj, x, y, oldCharacter, newCharacter):
         floodFill(mapObj, x, y + 1, oldCharacter, newCharacter)
     if y > 0 and mapObj[x][y - 1] == oldCharacter:
         floodFill(mapObj, x, y - 1, oldCharacter, newCharacter)
+
 
 def drawMap(mapObj, game_state, goals):
     map_width = len(mapObj) * object_width
