@@ -38,6 +38,44 @@ def load_image(name, colorkey=None):
     return image
 
 
+def startScreen():
+    titleRect = images['title'].get_rect()
+    topCoord = 50
+    titleRect.top = topCoord
+    titleRect.centerx = half_width
+    topCoord += titleRect.height
+
+    instructionText = ['Передвигайте монеты на красные поля.',
+                       'Используйте стрелочки для передвижения.',
+                       ' W A S D - управление камерой, P - изменение персонажа,',
+                       'Backspace - обновление уровня, Esc - выход из игры.',
+                       'N - переход на следующий уровень, B - возвращение на предыдущий уровень.']
+
+    mainSurface.fill(background)
+    mainSurface.blit(images['title'], titleRect)
+
+    for i in range(len(instructionText)):
+        instSurf = text.render(instructionText[i], 1, textcolor)
+        instRect = instSurf.get_rect()
+        topCoord += 10
+        instRect.top = topCoord
+        instRect.centerx = half_width
+        topCoord += instRect.height
+        mainSurface.blit(instSurf, instRect)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                terminate()
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    terminate()
+                return
+
+        pygame.display.update()
+        FPS_clock.tick()
+
+
 def main():
     global FPS_clock, mainSurface, images, barriers, outside, text, players, currentImage
     pygame.init()
@@ -299,44 +337,6 @@ def makeMove(mapObj, game_state, playermove):
                 return False
         game_state['player'] = (player_x + xOffset, player_y + yOffset)
         return True
-
-
-def startScreen():
-    titleRect = images['title'].get_rect()
-    topCoord = 50
-    titleRect.top = topCoord
-    titleRect.centerx = half_width
-    topCoord += titleRect.height
-
-    instructionText = ['Передвигайте монеты на красные поля.',
-                       'Используйте стрелочки для передвижения.',
-                       ' W A S D - управление камерой, P - изменение персонажа,',
-                       'Backspace - обновление уровня, Esc - выход из игры.',
-                       'N - переход на следующий уровень, B - возвращение на предыдущий уровень.']
-
-    mainSurface.fill(background)
-    mainSurface.blit(images['title'], titleRect)
-
-    for i in range(len(instructionText)):
-        instSurf = text.render(instructionText[i], 1, textcolor)
-        instRect = instSurf.get_rect()
-        topCoord += 10
-        instRect.top = topCoord
-        instRect.centerx = half_width
-        topCoord += instRect.height
-        mainSurface.blit(instSurf, instRect)
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                terminate()
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    terminate()
-                return
-
-        pygame.display.update()
-        FPS_clock.tick()
 
 
 def readFile(filename):
