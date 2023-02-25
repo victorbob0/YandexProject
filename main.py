@@ -55,9 +55,9 @@ def main():
     moving_coin_size = coin_width - 2, coin_height - 2
     charcter_size = 50, 70
 
-    images = {'goal': pygame.transform.scale(load_image('Bronze_30.png'), coin_size),
-              'goal with coin': pygame.transform.scale(load_image('Gold_21.png'), achieved_goal_size),
-              'coin': pygame.transform.scale(load_image('Silver_21.png'), moving_coin_size),
+    images = {'goal': pygame.transform.scale(load_image('red.png'), tile_size),
+              'goal with coin': pygame.transform.scale(load_image('blue.png'), tile_size),
+              'coin': pygame.transform.scale(load_image('Silver_21.png'), coin_size),
               'corner': pygame.transform.scale(load_image('Tile_03.png'), tile_size),
               'wall': pygame.transform.scale(load_image('Tile_05.png'), tile_size),
               'inside floor': load_image('Plain_Block.png'),
