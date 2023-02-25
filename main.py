@@ -63,7 +63,7 @@ def main():
               'inside floor': load_image('Plain_Block.png'),
               'outside floor': pygame.transform.scale(load_image('Grass_Block.png'), tile_size),
               'title': load_image('titlle_image.png'),
-              'solved': load_image('star_solved.png'),
+              'solved': load_image('level_solved.png'),
               'ghost': load_image('ghost_.png'),
               'redguy': pygame.transform.scale(load_image('red_chelick.png'), charcter_size),
               'pinkmon': pygame.transform.scale(load_image('Pink_Monster.png'), coin_size),
