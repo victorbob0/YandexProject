@@ -51,11 +51,13 @@ def main():
     text = pygame.font.Font('data/arial.ttf', 20)
     tile_size = tile_width, tile_height = 50, 85
     coin_size = coin_width, coin_height = 50, 50
+    achieved_goal_size = coin_width + 2, coin_height + 2
+    moving_coin_size = coin_width - 2, coin_height - 2
     charcter_size = 50, 70
 
     images = {'goal': pygame.transform.scale(load_image('Bronze_30.png'), coin_size),
-              'goal with coin': pygame.transform.scale(load_image('Silver_21.png'), coin_size),
-              'coin': pygame.transform.scale(load_image('Silver_21.png'), coin_size),
+              'goal with coin': pygame.transform.scale(load_image('Gold_21.png'), achieved_goal_size),
+              'coin': pygame.transform.scale(load_image('Silver_21.png'), moving_coin_size),
               'corner': pygame.transform.scale(load_image('Tile_03.png'), tile_size),
               'wall': pygame.transform.scale(load_image('Tile_05.png'), tile_size),
               'inside floor': load_image('Plain_Block.png'),
@@ -91,7 +93,7 @@ def main():
     currentImage = 0
 
     startScreen()
-    levels = readFile('for_play.txt')
+    levels = readFile('data/for_play.txt')
 
     current_level_index = 0
     while True:
@@ -101,7 +103,6 @@ def main():
             if current_level_index >= len(levels):
                 current_level_index = 0
         elif result == 'back':
-            # Go to the previous level.
             current_level_index -= 1
             if current_level_index < 0:
                 current_level_index = len(levels) - 1
