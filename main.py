@@ -25,13 +25,16 @@ RIGHT = 'right'
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     image = pygame.image.load(fullname)
+
     if colorkey is not None:
         image = image.convert()
         if colorkey == -1:
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey)
+
     else:
         image = image.convert_alpha()
+
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -79,7 +82,9 @@ def startScreen():
 def main():
     global FPS_clock, mainSurface, images, barriers, outside, text, players, currentImage
     pygame.init()
+
     FPS_clock = pygame.time.Clock()
+
     sound = pygame.mixer.Sound('data/music1.wav')
     sound.play()
 
@@ -90,6 +95,7 @@ def main():
     tile_size = tile_width, tile_height = 50, 85
     coin_size = coin_width, coin_height = 50, 50
     charcter_size = 50, 70
+
     images = {'goal': pygame.transform.scale(load_image('red.png'), tile_size),
               'goal with coin': pygame.transform.scale(load_image('blue.png'), tile_size),
               'coin': pygame.transform.scale(load_image('coinagain.png'), coin_size),
@@ -110,10 +116,10 @@ def main():
               'ugly tree': pygame.transform.scale(load_image('jungle_tree_5.png'), tile_size)}
 
     players = [images['ghost'],
-                images['redguy'],
-                images['pinkmon'],
-                images['whitemon'],
-                images['bluemon']]
+               images['redguy'],
+               images['pinkmon'],
+               images['whitemon'],
+               images['bluemon']]
 
     barriers = {'x': images['corner'],
                 '#': images['wall'],
@@ -131,29 +137,35 @@ def main():
     levels = readFile('data/for_play.txt')
 
     current_level_index = 0
+
     while True:
         result = running(levels, current_level_index)
         if result in ('solved', 'next'):
             current_level_index += 1
             if current_level_index >= len(levels):
                 current_level_index = 0
+
         elif result == 'back':
             current_level_index -= 1
             if current_level_index < 0:
                 current_level_index = len(levels) - 1
+
         elif result == 'reset':
             pass
 
 
 def running(levels, levelnumber):
     global currentImage
+
     levelObj = levels[levelnumber]
     mapObj = decorateMap(levelObj['mapObj'], levelObj['startState']['player'])
     game_state = copy.deepcopy(levelObj['startState'])
     mapNeedsRedraw = True
+
     levelSurf = text.render('Level %s of %s' % (levelnumber + 1, len(levels)), 1, textcolor)
     levelRect = levelSurf.get_rect()
     levelRect.bottomleft = (20, height - 35)
+
     mapWidth = len(mapObj) * object_width
     mapHeight = (len(mapObj[0]) - 1) * object_floor_height + object_height
     MAX_CAM_X_PAN = abs(half_height - int(mapHeight / 2)) + object_width
@@ -173,6 +185,7 @@ def running(levels, levelnumber):
         for event in pygame.event.get():
             if event.type == QUIT:
                 terminate()
+
             elif event.type == KEYDOWN:
                 keyPressed = True
                 if event.key == K_LEFT:
@@ -220,6 +233,7 @@ def running(levels, levelnumber):
 
         if playermove != None and not levelIsComplete:
             moved = makeMove(mapObj, game_state, playermove)
+
             if moved:
                 game_state['stepCounter'] += 1
                 mapNeedsRedraw = True
@@ -237,6 +251,7 @@ def running(levels, levelnumber):
             camera_setY += CAM_MOVE_SPEED
         elif cameraDown and camera_setY > -MAX_CAM_X_PAN:
             camera_setY -= CAM_MOVE_SPEED
+
         if cameraLeft and camera_setX < MAX_CAM_Y_PAN:
             camera_setX += CAM_MOVE_SPEED
         elif cameraRight and camera_setX > -MAX_CAM_Y_PAN:
@@ -248,6 +263,7 @@ def running(levels, levelnumber):
         mainSurface.blit(mapSurf, mapSurfRect)
 
         mainSurface.blit(levelSurf, levelRect)
+
         stepSurf = text.render('Steps: %s' % (game_state['stepCounter']), 1, textcolor)
         stepRect = stepSurf.get_rect()
         stepRect.bottomleft = (20, height - 10)
@@ -268,19 +284,23 @@ def running(levels, levelnumber):
 def isWall(mapObj, x, y):
     if x < 0 or x >= len(mapObj) or y < 0 or y >= len(mapObj[x]):
         return False
+
     elif mapObj[x][y] in ('#', 'x'):
         return True
+
     return False
 
 
 def decorateMap(mapObj, xy_start):
     x_start, y_start = xy_start
     copy_map = copy.deepcopy(mapObj)
+
     for x in range(len(copy_map)):
         for y in range(len(copy_map[0])):
             if copy_map[x][y] in ('$', '.', '@', '+', '*'):
                 copy_map[x][y] = ' '
     floodFill(copy_map, x_start, y_start, ' ', 'o')
+
     for x in range(len(copy_map)):
         for y in range(len(copy_map[0])):
 
@@ -313,6 +333,7 @@ def isBlocked(mapObj, game_state, x, y):
 def makeMove(mapObj, game_state, playermove):
     player_x, player_y = game_state['player']
     coins = game_state['coins']
+
     if playermove == UP:
         xOffset = 0
         yOffset = -1
@@ -333,6 +354,7 @@ def makeMove(mapObj, game_state, playermove):
             if not isBlocked(mapObj, game_state, player_x + (xOffset*2), player_y + (yOffset*2)):
                 ind = coins.index((player_x + xOffset, player_y + yOffset))
                 coins[ind] = (coins[ind][0] + xOffset, coins[ind][1] + yOffset)
+
             else:
                 return False
         game_state['player'] = (player_x + xOffset, player_y + yOffset)
@@ -341,6 +363,7 @@ def makeMove(mapObj, game_state, playermove):
 
 def readFile(filename):
     assert os.path.exists(filename), 'Cannot find the level file: %s' % (filename)
+
     mapFile = open(filename, 'r')
     content = mapFile.readlines() + ['\r\n']
     mapFile.close()
@@ -349,16 +372,19 @@ def readFile(filename):
     levelnum = 0
     mapTextLines = []
     mapObj = []
+
     for linenum in range(len(content)):
         line = content[linenum].rstrip('\r\n')
 
         if line != '':
             mapTextLines.append(line)
+
         elif line == '' and len(mapTextLines) > 0:
             maxWidth = -1
             for i in range(len(mapTextLines)):
                 if len(mapTextLines[i]) > maxWidth:
                     maxWidth = len(mapTextLines[i])
+
             for i in range(len(mapTextLines)):
                 mapTextLines[i] += ' ' * (maxWidth - len(mapTextLines[i]))
             for x in range(len(mapTextLines[0])):
@@ -371,6 +397,7 @@ def readFile(filename):
             start_y = None
             goals = []
             coins = []
+
             for x in range(maxWidth):
                 for y in range(len(mapObj[x])):
                     if mapObj[x][y] in ('@', '+'):
@@ -384,16 +411,18 @@ def readFile(filename):
             assert start_x != None and start_y != None, \
                 'Level %s (around line %s) in %s is missing a "@" or "+" to mark the start point.' \
                 % (levelnum + 1, linenum, filename)
+
             assert len(goals) > 0, \
                 'Level %s (around line %s) in %s must have at least one goal.' \
                 % (levelnum + 1, linenum, filename)
+
             assert len(coins) >= len(goals), \
                 'Level %s (around line %s) in %s is impossible to solve. It has %s goals but only %s coins.' \
                 % (levelnum + 1, linenum, filename, len(goals), len(coins))
 
             game_state = {'player': (start_x, start_y),
-                            'stepCounter': 0,
-                            'coins': coins}
+                          'stepCounter': 0,
+                          'coins': coins}
             levelObj = {'width': maxWidth,
                         'height': len(mapObj),
                         'mapObj': mapObj,
@@ -406,6 +435,7 @@ def readFile(filename):
             mapObj = []
             game_state = {}
             levelnum += 1
+
     return levels
 
 
@@ -426,11 +456,14 @@ def floodFill(mapObj, x, y, oldCharacter, newCharacter):
 def drawMap(mapObj, game_state, goals):
     map_width = len(mapObj) * object_width
     map_height = (len(mapObj[0]) - 1) * object_floor_height + object_height
+
     map_surf = pygame.Surface((map_width, map_height))
     map_surf.fill(background)
+
     for x in range(len(mapObj)):
         for y in range(len(mapObj[x])):
             space_rect = pygame.Rect((x * object_width, y * object_floor_height, object_width, object_height))
+
             if mapObj[x][y] in barriers:
                 base_tile = barriers[mapObj[x][y]]
             elif mapObj[x][y] in outside:
@@ -445,6 +478,7 @@ def drawMap(mapObj, game_state, goals):
                 map_surf.blit(images['coin'], space_rect)
             elif (x, y) in goals:
                 map_surf.blit(images['goal'], space_rect)
+
             if (x, y) == game_state['player']:
                 map_surf.blit(players[currentImage], space_rect)
     return map_surf
@@ -454,6 +488,7 @@ def isLevelFinished(level, game_state):
     for goal in level['goals']:
         if goal not in game_state['coins']:
             return False
+
     return True
 
 
@@ -464,4 +499,3 @@ def terminate():
 
 if __name__ == '__main__':
     main()
-
