@@ -86,7 +86,7 @@ def main():
     FPS_clock = pygame.time.Clock()
 
     sound = pygame.mixer.Sound('data/music1.wav')
-    sound.play()
+    sound.play(-1)
 
     mainSurface = pygame.display.set_mode((width, height))
 
